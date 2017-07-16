@@ -1,0 +1,188 @@
+<!--http://code.jquery.com/jquery-2.1.4.min.js-->
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+        <script type="text/javascript">
+            var cellValue = 'X';
+            var leftButtonDown = false;
+
+            $(function () {
+                $.ajax({
+                    url: "Map03.txt",
+                    dataType: "text",
+                    success: function (data) {
+                        //$("#divMap").html(data);
+                        var lines = data.split('\r\n');
+                        for (var y = 0; y < 118; y++) {
+                            var row = $('<div>').addClass('row').addClass('noselect');
+                            for (var x = 0; x < 16; x++) {
+                                var value = lines[y][x];
+                                //value = value.replace('.', 'Space');
+                                //var cell = $('<span>').addClass('cell').addClass('noselect').addClass(value).attr('x', x).attr('y', y);
+                                var cell = $('<span>').addClass('cell').addClass('noselect').html(value).attr('x', x).attr('y', y);
+                                $(row).append(cell);
+                            }
+                            $('#divMap').append(row);
+                        }
+                        applyEvents();
+                        timeoutFunction();
+                        //$('textarea').html(data);
+                    }
+                });
+
+                function applyEvents() {
+                    $('.cell').mousedown(function (e) {
+                        // Left mouse button was pressed, set flag
+                        if (e.which === 1) leftButtonDown = true;
+                        resetCell(this);
+                    });
+                    $('.cell').mouseup(function (e) {
+                        // Left mouse button was released, clear flag
+                        if (e.which === 1) leftButtonDown = false;
+                    });
+
+                    $('.cell').mousemove(function (e) {
+                        if (leftButtonDown) {
+                            resetCell(this);
+                        }
+                    });
+
+                    $("input:radio[name=cell]").click(function () {
+                        cellValue = $(this).val();
+                    });
+                }
+
+                var timeoutFunction = function () {
+                    var txt = '';
+                    $('.cell').each(function (index, el) {
+                        txt += $(el).html();
+                        if (index % 16 == 15) {
+                            txt += '\r\n';
+                        }
+                    });
+                    $('textarea').html(txt);
+                };
+
+                function resetCell(el) {
+                    $(el).html(cellValue);
+                    clearTimeout(timeoutFunction);
+                    setTimeout(timeoutFunction, 2000);
+                }
+            });
+        </script>
+        <style type="text/css">
+            .header-cont {
+                width:100%;
+                position:fixed;
+                top:0px;
+            }
+            .header {
+                height:50px;
+                background:#F0F0F0;
+                border:1px solid #CCC;
+                width:960px;
+                margin:0px auto;
+            }
+            .content {
+                width:960px;
+                background: #F0F0F0;
+                border: 1px solid #CCC;
+                height: 2000px;
+                margin: 70px auto;
+            }
+
+            .noselect {
+                -webkit-touch-callout: none;
+                -webkit-user-select: none;
+                -khtml-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+            }
+
+            .row {
+                margin: 0 0 0 0;
+                min-height: 32px;
+            }
+
+            .cell {
+                /*background: #ffffff;*/
+                border: 1px solid transparent;
+                margin: -1px;
+                opacity: .7;
+                min-width: 32px;
+                min-height: 32px;
+                display: inline-block;
+            }
+
+            .cell.X:before{ content: 'X'; }
+            .cell.A:before{ content: 'A'; }
+            .cell.B:before{ content: 'B'; }
+            .cell.C:before{ content: 'C'; }
+            .cell.D:before{ content: 'D'; }
+            .cell.E:before{ content: 'E'; }
+            .cell.P:before{ content: 'P'; }
+            .cell.W:before{ content: 'W'; }
+
+            .cell.Space:before{ content: '.'; }
+
+            .map img, .map div {
+                color: white;
+                box-sizing: content-box;
+            }
+
+            .map div, textarea {
+                font-family: 'Super Contra NES';
+                text-shadow: 2px 2px 0 black, 2px -2px 0 black, -2px 2px 0 black, -2px -2px 0 black;
+                font-size: 32px;
+                line-height: 32px;
+            }
+
+            #divMap {
+                width: 512px;
+                height: 3776px;
+                padding: 0px;
+                background: url('Map03.png') no-repeat;
+                padding: 0 0 0 2px;
+            }
+
+            textarea {
+                width: 512px;
+                height: 3776px;
+                padding: 0;
+                overflow-y:hidden;
+            }
+
+            .map {
+                background: black;
+            }
+
+            .options {
+                /*position: fixed;*/
+            }
+        </style>
+    </head>
+    <body>
+        <div class="header-cont">
+            <div>
+                <form action="" style="margin: 0 0 0 512px; background-color: white;">
+                    <input type="radio" name="cell" value="X" checked="checked">X
+                    <input type="radio" name="cell" value=".">.
+                    <input type="radio" name="cell" value="A">A
+                    <input type="radio" name="cell" value="B">B
+                    <input type="radio" name="cell" value="C">C
+                    <input type="radio" name="cell" value="D">D
+                    <input type="radio" name="cell" value="E">E
+                    <input type="radio" name="cell" value="P">P
+                    <input type="radio" name="cell" value="W">W
+                </form>
+            </div>
+        </div>
+        <div class="map noselect" style="margin-top: 64px;">
+            <div id="divMap" class="noselect">
+            </div>
+            <textarea>xpto</textarea>
+        </div>
+    </body>
+</html>

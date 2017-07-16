@@ -1,0 +1,48 @@
+<!--http://code.jquery.com/jquery-2.1.4.min.js-->
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <script src="http://ajax.microsoft.com/ajax/jquery/jquery-1.4.4.min.js"></script>
+        <script type="text/javascript">
+            $(function () {
+                $.ajax({
+                    url: "Map02.txt",
+                    dataType: "text",
+                    success: function (data) {
+                        $("#divMap").html(data);
+                    }
+                });
+            });
+        </script>
+        <style type="text/css">
+            .map img, .map div {
+                /*position: fixed;*/
+                color: white;
+                font-family: 'Super Contra NES';
+                text-shadow: 2px 2px 0 black, 2px -2px 0 black, -2px 2px 0 black, -2px -2px 0 black;
+                font-size: 32px;
+                /*padding: -10px;*/
+                box-sizing: content-box;
+                line-height: 32px;
+            }
+
+            .map div {
+                width: 1024px;
+                height: 3776px;
+                padding: 0px;
+                background: url('Map02.png') no-repeat;
+                padding: 0 0 0 2px;
+            }
+
+            .map {
+                background: black;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="map">
+            <div id="divMap" contenteditable="true">
+            </div>
+        </div>
+    </body>
+</html>

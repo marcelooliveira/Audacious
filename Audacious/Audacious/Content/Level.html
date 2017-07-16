@@ -1,0 +1,298 @@
+<!--http://code.jquery.com/jquery-2.1.4.min.js-->
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript">
+        var cellValue = 'X';
+        var leftButtonDown = false;
+        var level = 1;
+        var frame = 0;
+        var intervalFunction = function () {
+            $('#boss').css('background', "url('Boss" + level + "SpriteSheet.png') -" + (frame % 2) * 96 + "px 0 no-repeat");
+            frame++;
+        };
+
+        $(function () {
+            var loadLevel = function (level) {
+                $('#divMap').html('');
+                $('#divMap').css('background', "url('Map0" + level + ".png') no-repeat");
+
+                frame = 0;
+                if (intervalFunction)
+                    clearInterval(intervalFunction);
+
+                setInterval(intervalFunction, 500);
+
+                $.ajax({
+                    url: "Map0" + level + ".txt",
+                    dataType: "text",
+                    cache: false,
+                    success: function (data) {
+                        var lines = data.split('\r\n');
+                        for (var y = 0; y < 118; y++) {
+                            var row = $('<div>').addClass('row').addClass('noselect');
+                            for (var x = 0; x < 16; x++) {
+                                var value = lines[y][x];
+                                var cell = $('<span>').addClass('cell').addClass('noselect').attr('x', x).attr('y', y);
+                                $(cell).addClass('v' + value.replace('.', ''));
+
+                                $(row).append(cell);
+                            }
+                            var cell = $('<span>').addClass('noselect').html(" " + y);
+                            $(row).append(cell);
+                            $('#divMap').append(row);
+                        }
+                        applyEvents();
+                        timeoutFunction();
+                        //$('textarea').html(data);
+                    }
+                });
+
+                function applyEvents() {
+                    $('body').mouseup(function (e) {
+                        // Left mouse button was released, clear flag
+                        if (e.which === 1) leftButtonDown = false;
+                    });
+
+                    $('.cell').mousedown(function (e) {
+                        // Left mouse button was pressed, set flag
+                        if (e.which === 1) leftButtonDown = true;
+                        resetCell(this);
+                    });
+
+                    $('.cell').mousemove(function (e) {
+                        if (leftButtonDown) {
+                            resetCell(this);
+                        }
+                    });
+
+                    $("input:radio[name=cell]").click(function () {
+                        cellValue = $(this).val();
+                    });
+                }
+
+                var timeoutFunction = function () {
+                    var txt = '';
+                    $('.cell').each(function (index, el) {
+                        var classes = $(el).attr('class').split(' ');
+                        var value = classes[classes.length - 1];
+                        value = value[1];
+                        if (!value)
+                            value = '.';
+                        txt += value;
+                        if (index % 16 == 15) {
+                            txt += '\r\n';
+                        }
+                    });
+                    $('textarea').html(txt);
+                };
+
+                function resetCell(el) {
+                    $(el)
+                        .removeClass()
+                        .addClass('cell')
+                        .addClass('noselect')
+                        .addClass('v' + cellValue.replace('.', ''));
+
+                    clearTimeout(timeoutFunction);
+                    setTimeout(timeoutFunction, 2000);
+                }
+            }
+
+            loadLevel(level);
+            $("input:radio[name=level]").click(function () {
+                level = parseInt($(this).val());
+                loadLevel(level);
+            });
+        });
+    </script>
+    <style type="text/css">
+        .header-cont {
+            width: 100%;
+            position: fixed;
+            top: 0px;
+        }
+
+        .header {
+            height: 75px;
+            background: #F0F0F0;
+            border: 1px solid #CCC;
+            width: 960px;
+            margin: 0px auto;
+        }
+
+        .content {
+            width: 960px;
+            background: #F0F0F0;
+            border: 1px solid #CCC;
+            height: 2000px;
+            margin: 70px auto;
+        }
+
+        .noselect {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .row {
+            margin: 0 0 0 0;
+            min-height: 32px;
+            height: 32px;
+        }
+
+        .cell {
+            /*background: #ffffff;*/
+            border: 1px solid transparent;
+            margin: -1px;
+            opacity: 1;
+            min-width: 32px;
+            min-height: 32px;
+            display: inline-block;
+        }
+
+            .vX { background-color: #000000; opacity: .5; }            
+            .v { background-color: #ffffff; opacity: .5; }
+
+            .va { background: url('EnemySpriteSheet.png') 0 0; }
+            .vb { background: url('Enemy2SpriteSheet.png') 0 0; }
+            .vc { background: url('Enemy3SpriteSheet.png') 0 0; }
+            .vd { background: url('Enemy4SpriteSheet.png') 0 0; }
+            .ve { background: url('Enemy5SpriteSheet.png') 0 0; }
+            .vf { background: url('Enemy6SpriteSheet.png') 0 0; }
+            .vg { background: url('Enemy7SpriteSheet.png') 0 0; }
+            .vh { background: url('Enemy8SpriteSheet.png') 0 0; }
+            .vi { background: url('Enemy9SpriteSheet.png') 0 0; }
+            .vj { background: url('Enemy10SpriteSheet.png') 0 0; }
+            .vk { background: url('Enemy11SpriteSheet.png') 0 0; }
+            .vl { background: url('Enemy12SpriteSheet.png') 0 0; }
+            .vm { background: url('Enemy13SpriteSheet.png') 0 0; }
+
+            .vA { background: url('BonusSpriteSheet.png') -64px 0; }
+            .vB { background: url('BonusSpriteSheet.png') -96px 0; }
+            .vC { background: url('BonusSpriteSheet.png') -128px 0; }
+            .vD { background: url('BonusSpriteSheet.png') -160px 0; }
+            .vE { background: url('BonusSpriteSheet.png') -196px 0; }
+
+            .vP { background: url('PowerUpSpriteSheet.png') -32px 0; }
+            .vW { background: url('WeaponSpriteSheet.png') -32px 0; }
+
+            .cell.P:before {
+                content: 'P';
+            }
+
+            .cell.W:before {
+                content: 'W';
+            }
+
+            .cell.Space:before {
+                content: '.';
+            }
+
+        .map img, .map div {
+            color: white;
+            box-sizing: content-box;
+        }
+
+        .map div, textarea {
+            font-family: 'Courier New';
+            font-weight: bold;
+            font-size: 32px;
+            line-height: 32px;
+        }
+
+        #divMap {
+            /*width: 512px;*/
+            height: 3776px;
+            padding: 0px;
+            padding: 0 0 0 2px;
+        }
+
+        textarea {
+            width: 512px;
+            height: 3776px;
+            padding: 0;
+            overflow-y: hidden;
+        }
+
+        .map {
+            background: black;
+        }
+
+        .options {
+            /*position: fixed;*/
+        }
+
+        span {
+            /*background: #ffffff;*/
+            margin: -1px;
+            opacity: 1;
+            min-width: 32px;
+            min-height: 32px;
+            display: inline-block;
+        }
+
+        input {
+            vertical-align: middle;
+        }
+
+        #boss {
+            width: 96px;
+            height: 96px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-cont">
+        <div>
+            <form action="" style="margin: 0 0 0 512px; background-color: white;">
+                <input type="radio" name="cell" value="X" checked="checked">X
+                <input type="radio" name="cell" value=".">.
+                <input type="radio" name="cell" value="A"><span class="vA"></span>
+                <input type="radio" name="cell" value="B"><span class="vB"></span>
+                <input type="radio" name="cell" value="C"><span class="vC"></span>
+                <input type="radio" name="cell" value="D"><span class="vD"></span>
+                <input type="radio" name="cell" value="E"><span class="vE"></span>
+                <input type="radio" name="cell" value="P"><span class="vP"></span>
+                <input type="radio" name="cell" value="W"><span class="vW"></span>
+                <br />
+
+                <input type="radio" name="cell" value="a"><span class="va"></span>
+                <input type="radio" name="cell" value="b"><span class="vb"></span>
+                <input type="radio" name="cell" value="c"><span class="vc"></span>
+                <input type="radio" name="cell" value="d"><span class="vd"></span>
+                <input type="radio" name="cell" value="e"><span class="ve"></span>
+                <input type="radio" name="cell" value="f"><span class="vf"></span>
+                <input type="radio" name="cell" value="g"><span class="vg"></span>
+                <input type="radio" name="cell" value="h"><span class="vh"></span>
+                <input type="radio" name="cell" value="i"><span class="vi"></span>
+                <input type="radio" name="cell" value="j"><span class="vj"></span>
+                <input type="radio" name="cell" value="k"><span class="vk"></span>
+                <input type="radio" name="cell" value="l"><span class="vl"></span>
+                <input type="radio" name="cell" value="m"><span class="vm"></span>
+                <br />
+
+                <input type="radio" name="level" value="1" checked="checked">Level 1
+                <input type="radio" name="level" value="2">Level 2
+                <input type="radio" name="level" value="3">Level 3
+                <input type="radio" name="level" value="4">Level 4
+                <input type="radio" name="level" value="5">Level 5
+                <input type="radio" name="level" value="6">Level 6
+                <input type="radio" name="level" value="7">Level 7
+                <input type="radio" name="level" value="8">Level 8
+            </form>
+        </div>
+    </div>
+    <div class="map noselect" style="margin-top: 64px;">
+        <div id="divMap" class="noselect">
+            <!--<span id="boss" style="background: url('Boss1SpriteSheet.png') 0 0; position: fixed; left: 218px; top: 128px;" width="196" height="196"></span>-->
+        </div>
+        <span id="boss" style="background: url('Boss1SpriteSheet.png'); position: absolute; left: 218px; top: 128px;" width="196" height="196"></span>
+        <textarea>xpto</textarea>
+    </div>
+</body>
+</html>
